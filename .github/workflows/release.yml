@@ -39,11 +39,11 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/dnd-backend:${{ github.event.release.tag_name }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/dnd-backend:${{ github.event.release.tag_name#v }}
 
       - name: Build and push frontend Docker image
         uses: docker/build-push-action@v4
         with:
           context: ./frontend
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/dnd-frontend:${{ github.event.release.tag_name }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/dnd-frontend:${{ github.event.release.tag_name#v }}
