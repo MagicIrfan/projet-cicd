@@ -1,5 +1,4 @@
 import express from 'express';
-import { CharacterController } from './src/controllers/character.controller';
 import characterRoutes from "./src/routes/character.route";
 
 const app = express();
