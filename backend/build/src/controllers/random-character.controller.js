@@ -11,23 +11,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRandomCharacter = void 0;
 const api_service_1 = require("../services/api.service");
-const array_utils_1 = require("../utils/array.utils");
+const character_service_1 = require("../services/character.service");
 const getRandomCharacter = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Récupérer les races
-        const races = yield (0, api_service_1.fetchData)('https://www.dnd5eapi.co/api/races');
-        const randomRace = (0, array_utils_1.getRandomElement)(races.results);
-        // Récupérer les classes
-        const classes = yield (0, api_service_1.fetchData)('https://www.dnd5eapi.co/api/classes');
-        const randomClass = (0, array_utils_1.getRandomElement)(classes.results);
+        const race = yield (0, character_service_1.getRandomRace)();
+        const className = yield (0, character_service_1.getRandomClass)();
         // @ts-ignore
-        const characterClass = yield (0, api_service_1.fetchData)(`https://www.dnd5eapi.co/api/classes/${randomClass.index}`);
+        const characterClass = yield (0, api_service_1.fetchData)(`https://www.dnd5eapi.co/api/classes/${className.toLowerCase()}`);
         // Vérifier si la classe a un équipement de départ
         // @ts-ignore
         const startingEquipment = characterClass === null || characterClass === void 0 ? void 0 : characterClass.starting_equipment;
         const response = {
-            race: randomRace,
-            class: randomClass,
+            race: race,
+            class: className,
             equipment: startingEquipment
         };
         // Retourner les résultats
