@@ -9,15 +9,15 @@ describe('CharacterService', () => {
     let characterService: CharacterService;
 
     beforeEach(() => {
-        characterService = new CharacterService();
+        // Instancier le service avec le mock de fetchData
+        characterService = new CharacterService(fetchData as any);
         jest.clearAllMocks();
     });
 
     test('getRandomClass should return a class name', async () => {
-        (fetchData as jest.Mock).mockResolvedValue({
-            results: [{ name: 'Wizard' }]
-        });
-        (getRandomElement as jest.Mock).mockReturnValue({ name: 'Wizard' });
+        const mockClassResponse = { results: [{ name: 'Wizard' }] };
+        (fetchData as jest.Mock).mockResolvedValue(mockClassResponse);
+        (getRandomElement as jest.Mock).mockReturnValue(mockClassResponse.results[0]);
 
         const className = await characterService.getRandomClass();
 
@@ -26,10 +26,9 @@ describe('CharacterService', () => {
     });
 
     test('getRandomRace should return a race name', async () => {
-        (fetchData as jest.Mock).mockResolvedValue({
-            results: [{ name: 'Elf' }]
-        });
-        (getRandomElement as jest.Mock).mockReturnValue({ name: 'Elf' });
+        const mockRaceResponse = { results: [{ name: 'Elf' }] };
+        (fetchData as jest.Mock).mockResolvedValue(mockRaceResponse);
+        (getRandomElement as jest.Mock).mockReturnValue(mockRaceResponse.results[0]);
 
         const race = await characterService.getRandomRace();
 
@@ -45,7 +44,8 @@ describe('CharacterService', () => {
             }
         ];
 
-        (fetchData as jest.Mock).mockResolvedValue({ desc: 'A sharp blade.' });
+        const mockEquipmentData = { equipment_category: { name: 'Weapon' } };
+        (fetchData as jest.Mock).mockResolvedValueOnce(mockEquipmentData);
 
         const formattedEquipments = await characterService.formatEquipment(mockEquipments);
 
@@ -53,14 +53,52 @@ describe('CharacterService', () => {
             {
                 name: 'Dagger',
                 quantity: 2,
-                description: 'A sharp blade.'
+                category: 'Weapon'
             }
         ]);
 
         expect(fetchData).toHaveBeenCalledWith('https://www.dnd5eapi.co/api/equipment/dagger');
     });
 
-    test('formatEquipment should return formatted equipment', async () => {
+    test('getRandomCharacter should return a character with race, class, and equipment', async () => {
+        const mockRaceResponse = { results: [{ name: 'Elf' }] };
+        const mockClassResponse = { results: [{ name: 'Wizard' }] };
+        const mockClassDetails = { starting_equipment: [{ equipment: { name: 'Dagger', url: '/api/equipment/dagger' }, quantity: 1 }] };
+        const mockEquipmentData = { equipment_category: { name: 'Weapon' } };
+
+        (fetchData as jest.Mock)
+            .mockResolvedValueOnce(mockRaceResponse) // Mock race
+            .mockResolvedValueOnce(mockClassResponse) // Mock class
+            .mockResolvedValueOnce(mockClassDetails) // Mock class starting equipment
+            .mockResolvedValueOnce(mockEquipmentData); // Mock equipment data
+
+        (getRandomElement as jest.Mock).mockImplementation((list) => list[0]);
+
+        const character = await characterService.getRandomCharacter();
+
+        expect(character).toEqual({
+            race: 'Elf',
+            class: 'Wizard',
+            equipments: [
+                {
+                    name: 'Dagger',
+                    quantity: 1,
+                    category: 'Weapon'
+                }
+            ]
+        });
+
+        expect(fetchData).toHaveBeenCalledTimes(4); // On vérifie qu'il y a bien eu 4 appels à fetchData
+    });
+
+    test('getRandomCharacter should throw an error if fetch fails', async () => {
+        // Simule un échec de fetchData
+        (fetchData as jest.Mock).mockRejectedValue(new Error("Network error"));
+
+        await expect(characterService.getRandomCharacter()).rejects.toThrowError("Impossible de générer un personnage aléatoire");
+    });
+
+    test('formatEquipment should handle error and return default equipment', async () => {
         const mockEquipments = [
             {
                 equipment: { name: 'Dagger', url: '/api/equipment/dagger' },
@@ -68,86 +106,19 @@ describe('CharacterService', () => {
             }
         ];
 
-        (fetchData as jest.Mock).mockResolvedValue({ desc: 'A sharp blade.' });
-
-        jest.spyOn(characterService, 'formatEquipment').mockResolvedValue([
-            {
-                name: 'Dagger',
-                quantity: 2,
-                description: 'A sharp blade.'
-            }
-        ]);
+        // Simule une erreur dans fetchData
+        (fetchData as jest.Mock).mockRejectedValueOnce(new Error("Network error"));
 
         const formattedEquipments = await characterService.formatEquipment(mockEquipments);
 
         expect(formattedEquipments).toEqual([
             {
-                name: 'Dagger',
-                quantity: 2,
-                description: 'A sharp blade.'
+                name: 'Unknown',
+                quantity: 0,
+                category: ''
             }
         ]);
 
-        expect(characterService.formatEquipment).toHaveBeenCalledWith(mockEquipments);
-    });
-
-    test('getRandomCharacter should return a character with mock formatEquipment', async () => {
-        (fetchData as jest.Mock)
-            .mockResolvedValueOnce({ results: [{ name: 'Elf' }] }) // Mock race
-            .mockResolvedValueOnce({ results: [{ name: 'Wizard' }] }) // Mock class
-            .mockResolvedValueOnce({ starting_equipment: [{ equipment: { name: 'Dagger', url: '/api/equipment/dagger' }, quantity: 1 }] }) // Mock class equipment
-
-        // Mock formatEquipment pour éviter l'appel HTTP
-        jest.spyOn(characterService, 'formatEquipment').mockResolvedValue([
-            {
-                name: 'Dagger',
-                quantity: 1,
-                description: 'A sharp blade.'
-            }
-        ]);
-
-        (getRandomElement as jest.Mock).mockImplementation((list) => list[0]);
-
-        const character = await characterService.getRandomCharacter();
-
-        expect(character).toEqual({
-            race: 'Elf',
-            class: 'Wizard',
-            equipments: [
-                {
-                    name: 'Dagger',
-                    quantity: 1,
-                    description: 'A sharp blade.'
-                }
-            ]
-        });
-
-        expect(characterService.formatEquipment).toHaveBeenCalled();
-    });
-
-    test('getRandomCharacter should return a character with race, class, and equipment', async () => {
-        (fetchData as jest.Mock)
-            .mockResolvedValueOnce({ results: [{ name: 'Elf' }] })
-            .mockResolvedValueOnce({ results: [{ name: 'Wizard' }] })
-            .mockResolvedValueOnce({ starting_equipment: [{ equipment: { name: 'Dagger', url: '/api/equipment/dagger' }, quantity: 1 }] }) // Mock class equipment
-            .mockResolvedValueOnce({ desc: 'A sharp blade.' });
-
-        (getRandomElement as jest.Mock).mockImplementation((list) => list[0]);
-
-        const character = await characterService.getRandomCharacter();
-
-        expect(character).toEqual({
-            race: 'Elf',
-            class: 'Wizard',
-            equipments: [
-                {
-                    name: 'Dagger',
-                    quantity: 1,
-                    description: 'A sharp blade.'
-                }
-            ]
-        });
-
-        expect(fetchData).toHaveBeenCalledTimes(4);
+        expect(fetchData).toHaveBeenCalledWith('https://www.dnd5eapi.co/api/equipment/dagger');
     });
 });

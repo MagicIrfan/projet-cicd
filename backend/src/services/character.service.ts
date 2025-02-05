@@ -1,65 +1,81 @@
-import {fetchData} from "./api.service";
-import {getRandomElement} from "../utils/array.utils";
-import {Character} from "../models/character.model";
-import {Equipment} from "../models/equipment.model";
+import { Character } from "../models/character.model";
+import { Equipment } from "../models/equipment.model";
+import { getRandomElement } from "../utils/array.utils";
 
 export class CharacterService {
-    async getRandomClass() : Promise<string> {
-        const classes : any = await fetchData('https://www.dnd5eapi.co/api/classes');
-        const randomClass : any  = getRandomElement(classes.results);
-        return randomClass?.name ?? '';
+    private readonly fetchData: (url: string) => Promise<any>;
+
+    constructor(fetchDataImpl?: (url: string) => Promise<any>) {
+        this.fetchData = fetchDataImpl || (async (url) => {
+            const response : Response = await fetch(url);
+            return response.json();
+        });
     }
 
-    async getRandomRace() : Promise<string>{
-        const races : any = await fetchData('https://www.dnd5eapi.co/api/races');
-        const randomRaces : any  = getRandomElement(races.results);
-        return randomRaces?.name ?? '';
+    async getRandomClass(): Promise<string> {
+        try {
+            const classes = await this.fetchData('https://www.dnd5eapi.co/api/classes');
+            const randomClass : any = getRandomElement(classes.results);
+            return randomClass?.name ?? '';
+        } catch (error) {
+            console.error("Erreur lors de la récupération d'une classe", error);
+            throw new Error("Impossible d'obtenir une classe aléatoire");
+        }
+    }
+
+    async getRandomRace(): Promise<string> {
+        try {
+            const races = await this.fetchData('https://www.dnd5eapi.co/api/races');
+            const randomRace : any = getRandomElement(races.results);
+            return randomRace?.name ?? '';
+        } catch (error) {
+            console.error("Erreur lors de la récupération d'une race", error);
+            throw new Error("Impossible d'obtenir une race aléatoire");
+        }
     }
 
     async formatEquipment(equipments: any[]): Promise<Equipment[]> {
-        const formattedEquipments: Equipment[] = [];
-        for(const equipment of equipments){
-            const { name, url } = equipment.equipment;
-            const quantity = equipment.quantity;
-            console.log(`url : ${url}`)
-            if (url) {
-                try {
-                    const equipmentData: any = await fetchData(`https://www.dnd5eapi.co${url}`);
-
-                    formattedEquipments.push({
-                        name: name,
-                        quantity: quantity,
-                        description: equipmentData?.desc ?? '',
-                    });
-                } catch (error) {
-                    console.error(`Erreur lors de la récupération des équipements pour l'URL: ${url}`, error);
+        return Promise.all(equipments.map(async (equipment: any) => {
+            try {
+                if (!equipment.equipment) {
+                    return { name: 'Unknown', quantity: 0, category: '' };
                 }
-            } else {
-                formattedEquipments.push({
-                    name: name,
-                    quantity: quantity,
-                    description: '',
-                });
+
+                const { name, url } = equipment.equipment;
+                const quantity = equipment.quantity;
+
+                if (url) {
+                    const equipmentData = await this.fetchData(`https://www.dnd5eapi.co${url}`);
+                    return {
+                        name,
+                        quantity,
+                        category: equipmentData?.equipment_category?.name ?? '',
+                    };
+                }
+
+                return { name, quantity, category: '' };
+
+            } catch (error) {
+                console.error(`Erreur lors du traitement de l'équipement`, error);
+                return { name: 'Unknown', quantity: 0, category: '' };
             }
-        }
-        return formattedEquipments;
+        }));
     }
 
     async getRandomCharacter(): Promise<Character> {
-        const race : string = await this.getRandomRace();
-        const className : string = await this.getRandomClass();
+        try {
+            const race = await this.getRandomRace();
+            const className = await this.getRandomClass();
 
-        const characterClass : any = await fetchData(`https://www.dnd5eapi.co/api/classes/${className.toLowerCase()}`);
+            const characterClass = await this.fetchData(`https://www.dnd5eapi.co/api/classes/${className.toLowerCase()}`);
+            const startingEquipment = characterClass?.starting_equipment ?? [];
 
-        const startingEquipment : any = characterClass?.starting_equipment ?? [];
+            const equipments = await this.formatEquipment(startingEquipment);
 
-        const equipments : Equipment[] = await this.formatEquipment(startingEquipment);
-
-        return {
-            race: race,
-            class : className,
-            equipments : equipments
-        };
-    };
+            return { race, class: className, equipments };
+        } catch (error) {
+            console.error("Erreur lors de la création du personnage", error);
+            throw new Error("Impossible de générer un personnage aléatoire");
+        }
+    }
 }
-
