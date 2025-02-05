@@ -13,7 +13,7 @@ export class CharacterController {
             const character = await this.characterService.getRandomCharacter();
             res.json(character);
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             res.status(500).json({ error: errorMessage });
         }
     };

@@ -18,8 +18,9 @@ export class CharacterService {
             const randomClass : any = getRandomElement(classes.results);
             return randomClass?.name ?? '';
         } catch (error) {
-            console.error("Erreur lors de la récupération d'une classe", error);
-            throw new Error("Impossible d'obtenir une classe aléatoire");
+            console.error("Error retrieving a class", error);
+            console.error("Error retrieving a class", error);
+            throw new Error("Impossible to get a random class");
         }
     }
 
@@ -29,8 +30,8 @@ export class CharacterService {
             const randomRace : any = getRandomElement(races.results);
             return randomRace?.name ?? '';
         } catch (error) {
-            console.error("Erreur lors de la récupération d'une race", error);
-            throw new Error("Impossible d'obtenir une race aléatoire");
+            console.error("Error retrieving a race", error);
+            throw new Error("Impossible to get a random race");
         }
     }
 
@@ -56,7 +57,7 @@ export class CharacterService {
                 return { name, quantity, category: '' };
 
             } catch (error) {
-                console.error(`Erreur lors du traitement de l'équipement`, error);
+                console.error(`Error during equipment format`, error);
                 return { name: 'Unknown', quantity: 0, category: '' };
             }
         }));
@@ -74,8 +75,8 @@ export class CharacterService {
 
             return { race, class: className, equipments };
         } catch (error) {
-            console.error("Erreur lors de la création du personnage", error);
-            throw new Error("Impossible de générer un personnage aléatoire");
+            console.error("Error during character creation", error);
+            throw new Error("Impossible to get a random character");
         }
     }
 }
