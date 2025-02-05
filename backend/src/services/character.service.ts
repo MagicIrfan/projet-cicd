@@ -19,8 +19,9 @@ export class CharacterService {
     async formatEquipment(equipments: any[]): Promise<Equipment[]> {
         const formattedEquipments: Equipment[] = [];
         for(const equipment of equipments){
-            const { name, url, desc } = equipment.equipment;
+            const { name, url } = equipment.equipment;
             const quantity = equipment.quantity;
+            console.log(`url : ${url}`)
             if (url) {
                 try {
                     const equipmentData: any = await fetchData(`https://www.dnd5eapi.co${url}`);
@@ -37,7 +38,7 @@ export class CharacterService {
                 formattedEquipments.push({
                     name: name,
                     quantity: quantity,
-                    description: desc ?? '',
+                    description: '',
                 });
             }
         }
