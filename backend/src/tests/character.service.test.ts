@@ -62,9 +62,9 @@ describe('CharacterService', () => {
         const mockClassDetails = { starting_equipment: [] };
 
         (fetchData as jest.Mock)
-            .mockResolvedValueOnce(mockRaceResponse) // Mock race
-            .mockResolvedValueOnce(mockClassResponse) // Mock class
-            .mockResolvedValueOnce(mockClassDetails); // Mock class starting equipment
+            .mockResolvedValueOnce(mockRaceResponse)
+            .mockResolvedValueOnce(mockClassResponse)
+            .mockResolvedValueOnce(mockClassDetails);
 
         (getRandomElement as jest.Mock).mockImplementation((list) => list[0]);
 

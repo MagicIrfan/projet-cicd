@@ -14,7 +14,7 @@ export class CharacterService {
 
     private async getRandomClass(): Promise<string> {
         try {
-            const classes = await this.fetchData('https://www.dnd5eapi.co/api/classes');
+            const classes = await this.fetchData('/api/classes');
             const randomClass : any = getRandomElement(classes.results);
             return randomClass?.name ?? '';
         } catch (error) {
@@ -25,7 +25,7 @@ export class CharacterService {
 
     private async getRandomRace(): Promise<string> {
         try {
-            const races = await this.fetchData('https://www.dnd5eapi.co/api/races');
+            const races = await this.fetchData('/api/races');
             const randomRace : any = getRandomElement(races.results);
             return randomRace?.name ?? '';
         } catch (error) {
@@ -45,7 +45,7 @@ export class CharacterService {
                 const quantity = equipment.quantity;
 
                 if (url) {
-                    const equipmentData = await this.fetchData(`https://www.dnd5eapi.co${url}`);
+                    const equipmentData = await this.fetchData(url);
                     return {
                         name,
                         quantity,
@@ -67,7 +67,7 @@ export class CharacterService {
             const race = await this.getRandomRace();
             const className = await this.getRandomClass();
 
-            const characterClass = await this.fetchData(`https://www.dnd5eapi.co/api/classes/${className.toLowerCase()}`);
+            const characterClass = await this.fetchData(`/api/classes/${className.toLowerCase()}`);
             const startingEquipment = characterClass?.starting_equipment ?? [];
 
             const equipments = await this.formatEquipment(startingEquipment);
