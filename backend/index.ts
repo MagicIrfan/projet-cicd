@@ -1,6 +1,6 @@
 import express from 'express';
 import characterRoutes from "./src/routes/character.route";
-import classRoutes from "./src/routes/class.route";
+import classRoutes from "./src/routes/character-class.route";
 
 const app = express();
 const port = 8080;

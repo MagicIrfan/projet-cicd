@@ -1,6 +1,6 @@
-import {Class} from "./class.model";
+import {CharacterClass} from "./character-class.model";
 
 export interface CompareClass{
-    class1:Class,
-    class2:Class
+    class1:CharacterClass,
+    class2:CharacterClass
 }
