@@ -1,4 +1,4 @@
-import {Equipment} from "./equipment.model";
+import {Equipment} from './equipment.model';
 
 export interface Character{
     race:string,
