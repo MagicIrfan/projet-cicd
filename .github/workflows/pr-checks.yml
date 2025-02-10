@@ -43,6 +43,9 @@ jobs:
           npm install
           npm run dev &
 
+      - name: Install wait-on
+        run: npm install -g wait-on
+
       - name: Wait for server to be ready
         run: |
           wait-on http://localhost:5173
