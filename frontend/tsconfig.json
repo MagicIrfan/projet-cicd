@@ -4,5 +4,8 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "rootDir": "."
+  "rootDir": ".",
+  "compilerOptions": {
+    "types": ["cypress"]
+  }
 }

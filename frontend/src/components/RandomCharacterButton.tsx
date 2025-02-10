@@ -19,7 +19,7 @@ const RandomCharacterButton: React.FC<RandomCharacterButtonProps> = ({ regenerat
         }}
         onClick={regenerateCharacter}
     >
-        Creating a random character
+        Create a random character
     </Button>
 );
 

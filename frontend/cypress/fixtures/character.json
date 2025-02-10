@@ -1,0 +1,9 @@
+{
+  "race": "Human",
+  "class": "Wizard",
+  "equipments": [
+    { "name": "Sword", "quantity": 1, "category": "Weapon" },
+    { "name": "Shield", "quantity": 1, "category": "Armor" },
+    { "name": "Potion", "quantity": 3, "category": "Consumable" }
+  ]
+}
