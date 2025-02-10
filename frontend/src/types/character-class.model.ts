@@ -1,5 +1,5 @@
-import {Proficiency} from "./proficiency.model";
-import {SpecialAbility} from "./special-ability.model";
+import {Proficiency} from "./proficiency.model.ts";
+import {SpecialAbility} from "./special-ability.model.ts";
 
 export interface CharacterClass {
     name:string,

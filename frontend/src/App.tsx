@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import './App.css';
 import Home from "./pages/Home.tsx";
-import CompareClasses from "./pages/Compareclasses.tsx";
+import CompareClasses from "./pages/CompareClasses.tsx";
 import Navbar from "./components/Navbar.tsx";
 
 function NotFound() {

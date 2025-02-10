@@ -1,17 +1,27 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
-export const useFetch = (url: string) => {
-    const [data, setData] = useState(null);
+export const useFetch = <T>(url: string, trigger: boolean) => {
+    const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetch(url)
-            .then(response => response.json())
-            .then(json => setData(json))
-            .catch(err => setError(err.message))
+        const source = axios.CancelToken.source();
+
+        axios.get<T>(url, { cancelToken: source.token })
+            .then((response) => setData(response.data))
+            .catch((err) => {
+                if (!axios.isCancel(err)) {
+                    setError(err.message);
+                }
+            })
             .finally(() => setLoading(false));
-    }, [url]);
+
+        return () => {
+            source.cancel();
+        };
+    }, [url, trigger]);
 
     return { data, loading, error };
 };
