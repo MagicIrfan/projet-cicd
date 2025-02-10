@@ -31,15 +31,17 @@ jobs:
       - name: Start backend server
         run: |
           cd backend
-          npm run start
+          npm run start &
 
       - name: Start frontend server
         run: |
           cd frontend
-          npm run dev 
+          npm run dev &
 
       - name: Wait for servers to be ready
-        run: sleep 10
+        run: |
+          wait-on http://localhost:3000
+          wait-on http://localhost:5173
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v5
