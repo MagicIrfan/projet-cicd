@@ -1,6 +1,8 @@
 import axios, {AxiosResponse} from 'axios';
+import {API_BASE_URL} from "../config";
 
-export const fetchData = async (url : string) : Promise<any> => {
+export const fetchData = async (endpoint : string) : Promise<any> => {
+    const url = `${API_BASE_URL}${endpoint}`
     try {
         const response : AxiosResponse<any,any> = await axios.get(url);
         return response.data;

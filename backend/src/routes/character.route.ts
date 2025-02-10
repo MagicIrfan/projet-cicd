@@ -1,16 +1,12 @@
 import { Router } from 'express';
 import {CharacterController} from "../controllers/character.controller";
+import {asyncHandler} from "../middleware/asyncHandler";
 
-const router = Router();
+const router : Router = Router();
 const characterController = new CharacterController();
 
-router.get('/random', async (req, res) => {
-    try {
-        const character = await characterController.getRandomCharacter(req, res);
-        res.json(character);
-    } catch (error) {
-        res.status(500).json({ error: 'An error occurred during character creation.' });
-    }
-});
+router.get('/random', asyncHandler(async (req, res) => {
+    await characterController.getRandomCharacter(req, res);
+}));
 
 export default router;

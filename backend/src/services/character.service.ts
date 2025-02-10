@@ -12,21 +12,20 @@ export class CharacterService {
         });
     }
 
-    async getRandomClass(): Promise<string> {
+    private async getRandomClass(): Promise<string> {
         try {
-            const classes = await this.fetchData('https://www.dnd5eapi.co/api/classes');
+            const classes = await this.fetchData('/api/classes');
             const randomClass : any = getRandomElement(classes.results);
             return randomClass?.name ?? '';
         } catch (error) {
-            console.error("Error retrieving a class", error);
             console.error("Error retrieving a class", error);
             throw new Error("Impossible to get a random class");
         }
     }
 
-    async getRandomRace(): Promise<string> {
+    private async getRandomRace(): Promise<string> {
         try {
-            const races = await this.fetchData('https://www.dnd5eapi.co/api/races');
+            const races = await this.fetchData('/api/races');
             const randomRace : any = getRandomElement(races.results);
             return randomRace?.name ?? '';
         } catch (error) {
@@ -35,7 +34,7 @@ export class CharacterService {
         }
     }
 
-    async formatEquipment(equipments: any[]): Promise<Equipment[]> {
+    private async formatEquipment(equipments: any[]): Promise<Equipment[]> {
         return Promise.all(equipments.map(async (equipment: any) => {
             try {
                 if (!equipment.equipment) {
@@ -46,7 +45,7 @@ export class CharacterService {
                 const quantity = equipment.quantity;
 
                 if (url) {
-                    const equipmentData = await this.fetchData(`https://www.dnd5eapi.co${url}`);
+                    const equipmentData = await this.fetchData(url);
                     return {
                         name,
                         quantity,
@@ -63,12 +62,12 @@ export class CharacterService {
         }));
     }
 
-    async getRandomCharacter(): Promise<Character> {
+    public async getRandomCharacter(): Promise<Character> {
         try {
             const race = await this.getRandomRace();
             const className = await this.getRandomClass();
 
-            const characterClass = await this.fetchData(`https://www.dnd5eapi.co/api/classes/${className.toLowerCase()}`);
+            const characterClass = await this.fetchData(`/api/classes/${className.toLowerCase()}`);
             const startingEquipment = characterClass?.starting_equipment ?? [];
 
             const equipments = await this.formatEquipment(startingEquipment);
