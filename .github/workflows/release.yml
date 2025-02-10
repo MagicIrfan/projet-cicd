@@ -15,7 +15,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install backend dependencies and run tests
         run: |
@@ -27,12 +27,12 @@ jobs:
         run: |
           cd frontend
           npm install
-          
-      - name: Run Cypress tests
-        uses: cypress-io/github-action@v5
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
         with:
+          build: npm run build
           start: npm run dev
-          wait-on: http://localhost:5173
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
