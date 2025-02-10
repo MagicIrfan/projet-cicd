@@ -9,6 +9,8 @@ Dans le cadre du cours sur le déploiement continu suivi à l'IMT Mines Alès, n
 - 🎢 **Obtenir un personnage aléatoire**
 - ⚔️ **Comparer deux classes**
 
+L'API [DnD 5e](https://www.dnd5eapi.co/) a été utilisée pour récupérer les données des personnages, des classes et des équipements, permettant ainsi à l'application d'offrir des informations dynamiques et actualisées sur les personnages et leurs caractéristiques. Cette API est interrogeable via des requêtes HTTP pour obtenir des données telles que les races, les classes et les équipements disponibles dans le jeu de rôle Dungeons & Dragons 5e.
+
 ---
 
 ## Installation
@@ -33,6 +35,9 @@ git clone https://github.com/MagicIrfan/projet-cicd.git
 cd projet-cicd
 docker-compose up --build
 ```
+
+Le backend est disponible à l'adresse ```http://localhost:8080/``` <br/>
+Le frontend est disponible à l'adresse ```http://localhost:5173/```
 
 ### Lancer les tests
 
@@ -68,11 +73,11 @@ docker-compose up --build
 
 ## Endpoints
 
-| Méthode | Route                 | Description                                     | Réponse attendue |
-|---------|----------------------|---------------------------------|----------------|
-| **GET** | `/characters/random` | Récupère un personnage aléatoire | `{ name: "Guerrier", race: "Elfe", classe: "Mage" }` |
-| **GET** | `/classes/compare?class1=warrior&class2=wizard` | Compare deux classes et retourne leurs caractéristiques | `{ class1: { name: "Warrior", hitPoints: 12, ... }, class2: { name: "Wizard", hitPoints: 6, ... } }` |
-| **GET** | `/classes` | Liste les noms des classes disponibles | `["Warrior", "Wizard", "Rogue", "Cleric"]` |
+| Méthode | Route                 | Description                                | Réponse attendue                                                                                                                                                                                                                                      |
+|---------|----------------------|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **GET** | `/characters/random` | Récupère un personnage aléatoire | `{ "race": "Human", "class": "Wizard", "equipments": [ { "name": "Sword", "quantity": 1, "category": "Weapon" }, { "name": "Shield", "quantity": 1, "category": "Armor" }, { "name": "Potion", "quantity": 3, "category": "Consumable" } ] }`         |
+| **GET** | `/classes/compare?class1=warrior&class2=wizard` | Compare deux classes et retourne leurs caractéristiques | `{ class1: { name: "Warrior", hitPoints: 12, ... }, class2: { name: "Wizard", hitPoints: 6, ... } }`                                                                                                                                                  |
+| **GET** | `/classes` | Liste les noms des classes disponibles | `["Warrior", "Wizard", "Rogue", "Cleric"]`                                                                                                                                                                                                            |
 
 ---
 
@@ -89,8 +94,8 @@ docker-compose up --build
 
 ## Technologies utilisées
 
-- **Backend** : Node.js + Express, Disponible sur le port `8080`
-- **Frontend** : React + Vite, Disponible sur le port `5173`
+- **Backend** : Node.js + Express, Disponible au port `8080`
+- **Frontend** : React + Vite, Disponible au port `5173`
 - **Tests** : Jest côté back et Cypress coté front
 - **API utilisée** : [DnD 5e API](https://www.dnd5eapi.co/)
 - **CI/CD** : GitHub Actions
