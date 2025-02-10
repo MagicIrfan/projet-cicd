@@ -23,24 +23,14 @@ jobs:
           npm install
           npm test
 
-      - name: Install frontend dependencies
+      - name: Install frontend dependencies and start server
         run: |
           cd frontend
           npm install
-
-      - name: Start backend server
-        run: |
-          cd backend
-          npm run start &
-
-      - name: Start frontend server
-        run: |
-          cd frontend
           npm run dev &
 
-      - name: Wait for servers to be ready
+      - name: Wait for server to be ready
         run: |
-          wait-on http://localhost:8080
           wait-on http://localhost:5173
 
       - name: Run Cypress tests

@@ -37,21 +37,14 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install backend dependencies and start server
-        run: |
-          cd backend
-          npm install
-          npm run start &
-
       - name: Install frontend dependencies and start server
         run: |
           cd frontend
           npm install
           npm run dev &
 
-      - name: Wait for servers to be ready
+      - name: Wait for server to be ready
         run: |
-          wait-on http://localhost:8080
           wait-on http://localhost:5173
 
       - name: Run Cypress tests
